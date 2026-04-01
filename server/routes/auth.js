@@ -1,5 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const router = express.Router();
 
@@ -34,9 +35,16 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // Create user
+    // Hash password manually
+    const salt = await bcrypt.genSalt(12);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    
+    // Create user with hashed password
     const user = await User.create({ 
-      name, email, password, role 
+      name, 
+      email, 
+      password: hashedPassword, 
+      role 
     });
 
     // Generate token
@@ -67,7 +75,8 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password, role } = req.body;
-
+    console.log('Login attempt:', email, role);
+    
     // Validation
     if (!email || !password) {
       return res.status(400).json({ 
@@ -79,6 +88,7 @@ router.post('/login', async (req, res) => {
     // Find user with role
     const query = role ? { email, role } : { email };
     const user = await User.findOne(query);
+    console.log('User found:', user ? 'YES' : 'NO');
     
     if (!user) {
       return res.status(401).json({ 
@@ -88,8 +98,10 @@ router.post('/login', async (req, res) => {
     }
 
     // Check password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
+    const match = await bcrypt.compare(password, user.password);
+    console.log('Password match:', match);
+    
+    if (!match) {
       return res.status(401).json({ 
         success: false,
         message: 'Incorrect password. Try again.' 

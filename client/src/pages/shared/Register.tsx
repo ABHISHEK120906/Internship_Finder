@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, User, Briefcase, Lock, ArrowRight, Sparkles, ChevronLeft, Mail, UserPlus } from 'lucide-react';
+import { User, Briefcase, ArrowRight, Sparkles, ChevronLeft, UserPlus } from 'lucide-react';
 import { useStore } from '../../store/useStore';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { registerUser } from '../../api/auth';
 
 const Register: React.FC = () => {
   const { setTheme, setUser } = useStore();
   const navigate = useNavigate();
-  const [selectedRole, setSelectedRole] = useState<null | 'student' | 'admin' | 'company'>(null);
+  const [selectedRole, setSelectedRole] = useState<null | 'student' | 'company'>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ 
     name: '', 
@@ -28,14 +28,6 @@ const Register: React.FC = () => {
       badgeColor: 'silver'
     },
     { 
-      id: 'admin', 
-      label: 'ADMIN CONSOLE', 
-      icon: ShieldCheck, 
-      desc: 'Complete system control and oversight.',
-      badge: 'RESTRICTED ACCESS',
-      badgeColor: 'gold'
-    },
-    { 
       id: 'company', 
       label: 'ENTERPRISE PORTAL', 
       icon: Briefcase, 
@@ -45,7 +37,7 @@ const Register: React.FC = () => {
     }
   ];
 
-  const handleRoleSelect = (roleId: 'student' | 'admin' | 'company') => {
+  const handleRoleSelect = (roleId: 'student' | 'company') => {
     setSelectedRole(roleId);
     setTheme(roleId);
   };
@@ -83,7 +75,7 @@ const Register: React.FC = () => {
 
         setUser(response.data.user);
 
-        toast.success('Account created! Welcome!', {
+        toast.success('Welcome to ELITEX AI! 🎉', {
           className: 'toast-gold'
         });
 
@@ -91,8 +83,6 @@ const Register: React.FC = () => {
           const role = response.data.user.role;
           if (role === 'student') 
             navigate('/student/dashboard');
-          else if (role === 'admin') 
-            navigate('/admin/dashboard');
           else if (role === 'company') 
             navigate('/company/dashboard');
         }, 1000);
@@ -203,9 +193,7 @@ const Register: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="text-3xl font-black tracking-tighter text-white uppercase">
-                      {selectedRole === 'student' ? 'STUDENT ACCESS' : 
-                       selectedRole === 'admin' ? 'ADMIN CONSOLE' : 
-                       'ENTERPRISE ACCESS'}
+                      {selectedRole === 'student' ? 'STUDENT ACCESS' : 'ENTERPRISE ACCESS'}
                     </h4>
                     <p className="text-xs font-bold text-silver-primary uppercase tracking-widest mt-2">
                        SECURE · ENCRYPTED · PRIVATE
@@ -287,6 +275,19 @@ const Register: React.FC = () => {
                <p className="text-center mt-12 text-xs font-bold text-silver-primary uppercase tracking-widest flex items-center justify-center gap-3">
                  <Sparkles size={12} /> 🔒 256-bit encrypted · JWT secured <Sparkles size={12} />
                </p>
+               
+               {/* Toggle between Register and Login */}
+               <div className="text-center mt-8">
+                 <p className="text-sm text-silver-primary mb-4">
+                   Already have account?{' '}
+                   <Link 
+                     to="/login" 
+                     className="text-gold-primary hover:text-gold-secondary font-bold uppercase tracking-wider transition-colors"
+                   >
+                     LOGIN HERE →
+                   </Link>
+                 </p>
+               </div>
             </motion.div>
           )}
         </AnimatePresence>

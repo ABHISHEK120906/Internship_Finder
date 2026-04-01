@@ -2,11 +2,12 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../../store/useStore';
 import { LayoutDashboard, Users, Briefcase, FileText, Award, ShieldCheck, LogOut, Bell, Search } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { theme, logout } = useStore();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const menuItems = {
     student: [
@@ -57,7 +58,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </nav>
 
         <footer className="pt-8 border-t border-white/5">
-          <button onClick={() => { logout(); navigate('/login'); }} className="w-full flex items-center gap-5 px-6 py-5 rounded-[var(--radius-sm)] border border-red-500/20 bg-red-500/5 transition-all group hover:bg-red-500 hover:border-red-500 active:scale-95">
+          <button onClick={() => { 
+            localStorage.removeItem('elitex_token');
+            localStorage.removeItem('elitex_role'); 
+            localStorage.removeItem('elitex_user');
+            logout(); 
+            navigate('/login'); 
+          }} className="w-full flex items-center gap-5 px-6 py-5 rounded-[var(--radius-sm)] border border-red-500/20 bg-red-500/5 transition-all group hover:bg-red-500 hover:border-red-500 active:scale-95">
              <LogOut size={22} className="text-red-500 group-hover:text-white" />
              <span className="font-black uppercase tracking-widest text-xs text-red-500 group-hover:text-white">Sign Out</span>
           </button>
