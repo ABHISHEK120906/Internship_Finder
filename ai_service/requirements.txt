@@ -1,0 +1,6 @@
+flask
+flask-cors
+spacy
+pdfminer.six
+requests
+python-dotenv
