@@ -11,7 +11,10 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json());
 app.use(morgan('dev'));
 
@@ -24,13 +27,18 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // MongoDB Connection
-const mongoUri = process.env.MONGODB_URI || "mongodb+srv://Database:Ushi2244@database.7mrn6be.mongodb.net/?appName=Database";
-mongoose.connect(mongoUri)
-  .then(() => console.log('✅ MongoDB connected successfully'))
-  .catch((err) => {
-    console.error('❌ MongoDB connection error:', err.message);
-    process.exit(1);
-  });
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('✅ MongoDB Connected Successfully!');
+  } catch (err) {
+    console.error('❌ MongoDB Connection Failed:', err.message);
+    console.log('Retrying in 5 seconds...');
+    setTimeout(connectDB, 5000);
+  }
+};
+
+connectDB();
 
 // Routes
 const trackRoutes = require('./routes/track.routes');

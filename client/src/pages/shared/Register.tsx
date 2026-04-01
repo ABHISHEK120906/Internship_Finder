@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, User, Briefcase, Lock, ArrowRight, Sparkles, ChevronLeft } from 'lucide-react';
+import { ShieldCheck, User, Briefcase, Lock, ArrowRight, Sparkles, ChevronLeft, Mail, UserPlus } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { loginUser } from '../../api/auth';
+import { registerUser } from '../../api/auth';
 
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const { setTheme, setUser } = useStore();
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState<null | 'student' | 'admin' | 'company'>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    email: '', 
+    password: '', 
+    confirmPassword: '' 
+  });
 
   const roles = [
     { 
@@ -47,36 +52,41 @@ const Login: React.FC = () => {
 
   const handleBackToSelection = () => {
     setSelectedRole(null);
-    setFormData({ email: '', password: '' });
+    setFormData({ name: '', email: '', password: '', confirmPassword: '' });
     setTheme('student');
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
+    if (formData.password !== formData.confirmPassword) {
+      toast.error('Passwords do not match', {
+        className: 'toast-error'
+      });
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const response = await loginUser({
-        email: formData.email,
-        password: formData.password,
-        role: selectedRole
+      const response = await registerUser({ 
+        name: formData.name, 
+        email: formData.email, 
+        password: formData.password, 
+        role: selectedRole 
       });
 
       if (response.data.success) {
-        // Save to localStorage
         localStorage.setItem('elitex_token', response.data.token);
         localStorage.setItem('elitex_role', response.data.user.role);
         localStorage.setItem('elitex_user', JSON.stringify(response.data.user));
 
-        // Update store
         setUser(response.data.user);
 
-        // Show success toast
-        toast.success('Login successful! Redirecting...', {
+        toast.success('Account created! Welcome!', {
           className: 'toast-gold'
         });
 
-        // Redirect based on role
         setTimeout(() => {
           const role = response.data.user.role;
           if (role === 'student') 
@@ -87,9 +97,10 @@ const Login: React.FC = () => {
             navigate('/company/dashboard');
         }, 1000);
       }
-    } catch (err: any) {
-      const msg = err.response?.data?.message 
-        || 'Login failed. Check credentials.';
+    } catch (err: unknown) {
+      const error = err as any;
+      const msg = error.response?.data?.message 
+        || 'Registration failed. Try again.';
       toast.error(msg, {
         className: 'toast-error'
       });
@@ -118,12 +129,12 @@ const Login: React.FC = () => {
             animate={{ opacity: 1, y: 0 }} 
             className="space-y-4"
           >
-             <ShieldCheck className="mx-auto text-gold-primary mb-6" size={48} />
+             <UserPlus className="mx-auto text-gold-primary mb-6" size={48} />
              <h1 className="text-6xl md:text-7xl font-black tracking-tight text-white">
                ELITEX <span className="gold-text">AI</span>
              </h1>
              <p className="text-sm uppercase font-bold tracking-widest text-silver-primary">
-               INTELLIGENT ACCESS PORTAL
+               CREATE YOUR ACCOUNT
              </p>
           </motion.div>
         </header>
@@ -165,7 +176,7 @@ const Login: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center justify-center gap-2 text-gold-primary opacity-0 group-hover:opacity-100 transition-all">
-                    <span className="text-xs font-bold uppercase tracking-widest">Enter Portal</span>
+                    <span className="text-xs font-bold uppercase tracking-widest">Create Account</span>
                     <ArrowRight size={16} />
                   </div>
                 </motion.div>
@@ -188,7 +199,7 @@ const Login: React.FC = () => {
                
                <div className="flex items-center gap-6 mb-12">
                   <div className="p-4 rounded-2xl bg-black-pure border border-silver-border text-gold-primary">
-                    <Lock size={32} />
+                    <UserPlus size={32} />
                   </div>
                   <div>
                     <h4 className="text-3xl font-black tracking-tighter text-white uppercase">
@@ -202,7 +213,20 @@ const Login: React.FC = () => {
                   </div>
                </div>
 
-               <form onSubmit={handleLogin} className="space-y-8">
+               <form onSubmit={handleRegister} className="space-y-8">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase text-silver-primary tracking-widest ml-1">
+                      Full Name
+                    </label>
+                    <input 
+                      type="text" 
+                      required 
+                      placeholder="John Doe"
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      className="luxury-input w-full" 
+                    />
+                  </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase text-silver-primary tracking-widest ml-1">
                       Email Address
@@ -229,6 +253,19 @@ const Login: React.FC = () => {
                       className="luxury-input w-full" 
                     />
                   </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold uppercase text-silver-primary tracking-widest ml-1">
+                      Confirm Password
+                    </label>
+                    <input 
+                      type="password" 
+                      required 
+                      placeholder="••••••••"
+                      value={formData.confirmPassword}
+                      onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                      className="luxury-input w-full" 
+                    />
+                  </div>
                   <button 
                     type="submit" 
                     className="gold-btn w-full flex items-center justify-center gap-4"
@@ -237,11 +274,11 @@ const Login: React.FC = () => {
                      {isLoading ? (
                        <>
                          <div className="spinner"></div>
-                         AUTHENTICATING...
+                         CREATING ACCOUNT...
                        </>
                      ) : (
                        <>
-                         SECURE LOGIN <ArrowRight size={18} />
+                         CREATE ACCOUNT <ArrowRight size={18} />
                        </>
                      )}
                   </button>
@@ -258,4 +295,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Register;
