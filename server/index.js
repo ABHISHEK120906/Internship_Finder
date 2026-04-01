@@ -24,7 +24,8 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI)
+const mongoUri = process.env.MONGODB_URI || "mongodb+srv://Database:Ushi2244@database.7mrn6be.mongodb.net/?appName=Database";
+mongoose.connect(mongoUri)
   .then(() => console.log('✅ MongoDB connected successfully'))
   .catch((err) => {
     console.error('❌ MongoDB connection error:', err.message);
@@ -34,9 +35,11 @@ mongoose.connect(process.env.MONGODB_URI)
 // Routes
 const trackRoutes = require('./routes/track.routes');
 const aiRoutes = require('./routes/ai.routes');
+const authRoutes = require('./routes/auth.routes');
 
 app.use('/api/track', trackRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/auth', authRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Smart AI Internship System API' });

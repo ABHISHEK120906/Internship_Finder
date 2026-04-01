@@ -42,7 +42,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <ShieldCheck size={44} strokeWidth={2.5} />
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-black italic tracking-tighter uppercase text-white neon-text">PLACEX <span className="text-[var(--primary)]">AI</span></h1>
+            <h1 className="text-2xl font-black tracking-tighter uppercase text-white">ELITEX <span className="gold-text">AI</span></h1>
             <p className="text-[10px] uppercase font-black tracking-[0.5em] text-white/30 mt-2">Next-Gen Interface</p>
           </div>
         </header>

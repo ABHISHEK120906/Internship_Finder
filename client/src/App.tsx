@@ -22,7 +22,7 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <Suspense fallback={<div className="h-screen w-full bg-black flex items-center justify-center text-white text-xl animate-pulse uppercase tracking-[0.5em] font-black italic">PLACEX AI...</div>}>
+      <Suspense fallback={<div className="h-screen w-full bg-black flex items-center justify-center text-white text-xl animate-pulse uppercase tracking-[0.5em] font-black italic">ELITEX AI...</div>}>
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
