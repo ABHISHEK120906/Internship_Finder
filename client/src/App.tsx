@@ -9,6 +9,9 @@ const AdminDashboard = lazy(() => import('./pages/admin/Dashboard.tsx'));
 const CompanyDashboard = lazy(() => import('./pages/company/Dashboard.tsx'));
 const Auth = lazy(() => import('./pages/shared/Auth.tsx'));
 const Landing = lazy(() => import('./pages/shared/Landing.tsx'));
+const CareerRoadmap = lazy(() => import('./pages/student/CareerRoadmap.tsx'));
+const RoadmapDetail = lazy(() => import('./pages/student/RoadmapDetail.tsx'));
+const LearningProgress = lazy(() => import('./pages/student/LearningProgress.tsx'));
 
 const App: React.FC = () => {
   return (
@@ -21,6 +24,9 @@ const App: React.FC = () => {
           
           {/* Dashboards */}
           <Route path="/student/dashboard" element={<StudentDashboard />} />
+          <Route path="/student/career-roadmap" element={<CareerRoadmap />} />
+          <Route path="/student/career-roadmap/:fieldId" element={<RoadmapDetail />} />
+          <Route path="/student/learning-progress" element={<LearningProgress />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/company/dashboard" element={<CompanyDashboard />} />
           

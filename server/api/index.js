@@ -56,8 +56,10 @@ connectDB();
 
 // Routes
 const authRoutes = require('../routes/auth');
+const roadmapRoutes = require('../routes/roadmap.routes');
 
 app.use('/auth', authRoutes);
+app.use('/roadmap', roadmapRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to ELITEX AI API' });
