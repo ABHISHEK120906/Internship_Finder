@@ -7,7 +7,6 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(helmet());
@@ -30,27 +29,38 @@ app.use('/api/', limiter);
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('✅ MongoDB Connected Successfully!');
+    console.log('✅ MongoDB Connected!');
   } catch (err) {
-    console.error('❌ MongoDB Connection Failed:', err.message);
-    console.log('Retrying in 5 seconds...');
+    console.error('❌ MongoDB Failed:', err.message);
     setTimeout(connectDB, 5000);
   }
 };
 
+// MongoDB connection event listener
+mongoose.connection.on('connected', async () => {
+  console.log('✅ MongoDB Connected!');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log('📦 Collections will auto-create:');
+  console.log('   → users');
+  console.log('   → internships');
+  console.log('   → applications');
+  console.log('   → notifications');
+  console.log('   → visitor_logs');
+  console.log('   → certifications');
+  console.log('   → trainings');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log('🚀 Server ready!');
+});
+
 connectDB();
 
 // Routes
-const trackRoutes = require('./routes/track.routes');
-const aiRoutes = require('./routes/ai.routes');
-const authRoutes = require('./routes/auth.routes');
+const authRoutes = require('../routes/auth');
 
-app.use('/api/track', trackRoutes);
-app.use('/api/ai', aiRoutes);
 app.use('/auth', authRoutes);
 
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to Smart AI Internship System API' });
+  res.json({ message: 'Welcome to ELITEX AI API' });
 });
 
 // Error Handling Middleware
@@ -61,11 +71,5 @@ app.use((err, req, res, next) => {
     error: process.env.NODE_ENV === 'development' ? err : {},
   });
 });
-
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-  });
-}
 
 module.exports = app;

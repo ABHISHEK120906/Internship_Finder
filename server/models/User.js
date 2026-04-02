@@ -30,27 +30,17 @@ const userSchema = new mongoose.Schema({
     experience: String,
     resume: String,
     company: String,
-    website: String
+    website: String,
+    college: String,
+    branch: String,
+    year: String,
+    companyName: String,
+    industry: String
   },
   createdAt: { 
     type: Date, 
     default: Date.now 
   }
-});
-
-// Hash password before saving
-userSchema.pre('save', function(next) {
-  if (!this.isModified('password')) {
-    return next();
-  }
-  bcrypt.genSalt(12, (err, salt) => {
-    if (err) return next(err);
-    bcrypt.hash(this.password, salt, (err, hash) => {
-      if (err) return next(err);
-      this.password = hash;
-      next();
-    });
-  });
 });
 
 // Compare password method

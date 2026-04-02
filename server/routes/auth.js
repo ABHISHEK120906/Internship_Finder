@@ -16,43 +16,106 @@ const generateToken = (userId, role) => {
 // REGISTER
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { 
+      name, email, password, 
+      confirmPassword, role,
+      college, branch, year,
+      companyName, website, 
+      industry, accessKey 
+    } = req.body;
 
-    // Validation
+    // Basic validation
     if (!name || !email || !password || !role) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        message: 'All fields are required' 
+        message: 'All fields are required'
       });
     }
 
-    // Check if user exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ 
+    if (password !== confirmPassword) {
+      return res.status(400).json({
         success: false,
-        message: 'Email already registered. Please login.' 
+        message: 'Passwords do not match'
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters'
+      });
+    }
+
+    // Block admin registration publicly
+    if (role === 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Admin registration not allowed here'
+      });
+    }
+
+    // Company access key check
+    if (role === 'company') {
+      if (accessKey !== process.env.COMPANY_ACCESS_KEY) {
+        return res.status(403).json({
+          success: false,
+          message: '❌ Invalid company access key. Contact admin.'
+        });
+      }
+    }
+
+    // Check duplicate email
+    const exists = await User.findOne({ email });
+    if (exists) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email already registered. Please login.'
       });
     }
 
     // Hash password manually
     const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(password, salt);
-    
-    // Create user with hashed password
-    const user = await User.create({ 
-      name, 
-      email, 
-      password: hashedPassword, 
-      role 
-    });
+
+    // Create user
+    const userData = {
+      name,
+      email,
+      password: hashedPassword,
+      role,
+    };
+
+    // Add role-specific fields
+    if (role === 'student') {
+      userData.profile = {
+        college: college || '',
+        branch: branch || '',
+        year: year || '',
+        skills: [],
+        experience: ''
+      };
+    }
+
+    if (role === 'company') {
+      userData.profile = {
+        companyName: companyName || name,
+        website: website || '',
+        industry: industry || ''
+      };
+    }
+
+    const user = await User.create(userData);
 
     // Generate token
-    const token = generateToken(user._id, user.role);
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: '7d' }
+    );
 
     res.status(201).json({
       success: true,
-      message: 'Account created successfully!',
+      message: `Welcome to ELITEX AI! 🎉`,
       token,
       user: {
         id: user._id,
@@ -63,10 +126,10 @@ router.post('/register', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Register Error:', error);
-    res.status(500).json({ 
+    console.error('Register error:', error);
+    res.status(500).json({
       success: false,
-      message: 'Server error. Please try again.' 
+      message: 'Server error. Try again.'
     });
   }
 });
@@ -75,41 +138,48 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password, role } = req.body;
-    console.log('Login attempt:', email, role);
-    
-    // Validation
+
     if (!email || !password) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
-        message: 'Email and password required' 
+        message: 'Email and password required'
       });
     }
 
-    // Find user with role
+    // Find user — role optional filter
     const query = role ? { email, role } : { email };
     const user = await User.findOne(query);
+
+    // Debug logs (remove in production)
+    console.log('Login attempt:', email, role);
     console.log('User found:', user ? 'YES' : 'NO');
-    
+
     if (!user) {
-      return res.status(401).json({ 
+      return res.status(401).json({
         success: false,
-        message: 'No account found. Please register first.' 
+        message: 'No account found with this email. Please register.'
       });
     }
 
-    // Check password
-    const match = await bcrypt.compare(password, user.password);
-    console.log('Password match:', match);
-    
-    if (!match) {
-      return res.status(401).json({ 
+    // Compare password
+    const isMatch = await bcrypt.compare(
+      password, user.password
+    );
+    console.log('Password match:', isMatch);
+
+    if (!isMatch) {
+      return res.status(401).json({
         success: false,
-        message: 'Incorrect password. Try again.' 
+        message: 'Incorrect password. Please try again.'
       });
     }
 
     // Generate token
-    const token = generateToken(user._id, user.role);
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: '7d' }
+    );
 
     res.json({
       success: true,
@@ -124,10 +194,72 @@ router.post('/login', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Login Error:', error);
-    res.status(500).json({ 
+    console.error('Login error:', error);
+    res.status(500).json({
       success: false,
-      message: 'Server error. Please try again.' 
+      message: 'Server error. Try again.'
+    });
+  }
+});
+
+// ADMIN SETUP (hidden route)
+router.post('/admin/setup', async (req, res) => {
+  try {
+    const { name, email, password, masterKey } = req.body;
+
+    // Check master key
+    if (masterKey !== process.env.ADMIN_MASTER_KEY) {
+      return res.status(403).json({
+        success: false,
+        message: '🚫 Invalid master key'
+      });
+    }
+
+    // Check if admin already exists
+    const adminExists = await User.findOne({ 
+      role: 'admin' 
+    });
+    if (adminExists) {
+      return res.status(403).json({
+        success: false,
+        message: '🚫 Admin already exists. Setup disabled.'
+      });
+    }
+
+    // Hash password manually
+    const salt = await bcrypt.genSalt(12);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const admin = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: 'admin'
+    });
+
+    const token = jwt.sign(
+      { id: admin._id, role: 'admin' },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: '7d' }
+    );
+
+    res.status(201).json({
+      success: true,
+      message: '✅ Admin created! Setup now disabled.',
+      token,
+      user: {
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        role: 'admin'
+      }
+    });
+
+  } catch (error) {
+    console.error('Admin setup error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
     });
   }
 });
@@ -151,6 +283,14 @@ router.get('/profile', async (req, res) => {
       message: 'Invalid token' 
     });
   }
+});
+
+// LOGOUT
+router.post('/logout', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Logout successful. Please clear token from client.'
+  });
 });
 
 module.exports = router;

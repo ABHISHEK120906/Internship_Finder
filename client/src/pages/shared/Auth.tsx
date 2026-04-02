@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Briefcase, ArrowRight, Sparkles, ChevronLeft, UserPlus, Key, Building, GraduationCap } from 'lucide-react';
+import { 
+  User, 
+  Briefcase, 
+  ArrowRight, 
+  Sparkles, 
+  ChevronLeft, 
+  UserPlus, 
+  Lock, 
+  Key, 
+  Building, 
+  GraduationCap,
+  ShieldCheck
+} from 'lucide-react';
 import { useStore } from '../../store/useStore';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { registerUser } from '../../api/auth';
+import { registerUser, loginUser } from '../../api/auth';
+import { useAuth } from '../../hooks/useAuth';
 
-const Register: React.FC = () => {
-  const { setTheme, setUser } = useStore();
+const Auth: React.FC = () => {
+  const { setTheme } = useStore();
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const [isLoginMode, setIsLoginMode] = useState(true);
   const [selectedRole, setSelectedRole] = useState<null | 'student' | 'company'>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({ 
@@ -67,6 +82,45 @@ const Register: React.FC = () => {
     setTheme('student');
   };
 
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const response = await loginUser({
+        email: formData.email,
+        password: formData.password,
+        role: selectedRole
+      });
+
+      if (response.data.success) {
+        login(response.data.token, response.data.user);
+
+        toast.success('Login successful! Redirecting...', {
+          className: 'toast-gold'
+        });
+
+        setTimeout(() => {
+          const role = response.data.user.role;
+          if (role === 'student') 
+            navigate('/student/dashboard');
+          else if (role === 'admin') 
+            navigate('/admin/dashboard');
+          else if (role === 'company') 
+            navigate('/company/dashboard');
+        }, 1000);
+      }
+    } catch (err: any) {
+      const msg = err.response?.data?.message 
+        || 'Login failed. Check credentials.';
+      toast.error(msg, {
+        className: 'toast-error'
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -111,11 +165,7 @@ const Register: React.FC = () => {
       const response = await registerUser(requestData);
 
       if (response.data.success) {
-        localStorage.setItem('elitex_token', response.data.token);
-        localStorage.setItem('elitex_role', response.data.user.role);
-        localStorage.setItem('elitex_user', JSON.stringify(response.data.user));
-
-        setUser(response.data.user);
+        login(response.data.token, response.data.user);
 
         toast.success('Welcome to ELITEX AI! 🎉', {
           className: 'toast-gold'
@@ -129,9 +179,8 @@ const Register: React.FC = () => {
             navigate('/company/dashboard');
         }, 1000);
       }
-    } catch (err: unknown) {
-      const error = err as any;
-      const msg = error.response?.data?.message 
+    } catch (err: any) {
+      const msg = err.response?.data?.message 
         || 'Registration failed. Try again.';
       toast.error(msg, {
         className: 'toast-error'
@@ -161,15 +210,49 @@ const Register: React.FC = () => {
             animate={{ opacity: 1, y: 0 }} 
             className="space-y-4"
           >
-             <UserPlus className="mx-auto text-gold-primary mb-6" size={48} />
+             {isLoginMode ? (
+               <Lock className="mx-auto text-gold-primary mb-6" size={48} />
+             ) : (
+               <UserPlus className="mx-auto text-gold-primary mb-6" size={48} />
+             )}
              <h1 className="text-6xl md:text-7xl font-black tracking-tight text-white">
                ELITEX <span className="gold-text">AI</span>
              </h1>
              <p className="text-sm uppercase font-bold tracking-widest text-silver-primary">
-               CREATE YOUR ACCOUNT
+               {isLoginMode ? 'INTELLIGENT ACCESS PORTAL' : 'CREATE YOUR ACCOUNT'}
              </p>
           </motion.div>
         </header>
+
+        {/* Mode Toggle */}
+        <div className="flex items-center gap-4 bg-black-pure border border-silver-border rounded-full p-2">
+          <button
+            onClick={() => {
+              setIsLoginMode(true);
+              setSelectedRole(null);
+            }}
+            className={`px-6 py-3 rounded-full font-bold text-sm transition-all ${
+              isLoginMode 
+                ? 'bg-gold-primary text-black' 
+                : 'text-silver-primary hover:text-white'
+            }`}
+          >
+            LOGIN
+          </button>
+          <button
+            onClick={() => {
+              setIsLoginMode(false);
+              setSelectedRole(null);
+            }}
+            className={`px-6 py-3 rounded-full font-bold text-sm transition-all ${
+              !isLoginMode 
+                ? 'bg-gold-primary text-black' 
+                : 'text-silver-primary hover:text-white'
+            }`}
+          >
+            REGISTER
+          </button>
+        </div>
 
         {/* Dynamic Area: Selector or Form */}
         <AnimatePresence mode="wait">
@@ -208,27 +291,31 @@ const Register: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-center justify-center gap-2 text-gold-primary opacity-0 group-hover:opacity-100 transition-all">
-                    <span className="text-xs font-bold uppercase tracking-widest">Create Account</span>
+                    <span className="text-xs font-bold uppercase tracking-widest">
+                      {isLoginMode ? 'Enter Portal' : 'Create Account'}
+                    </span>
                     <ArrowRight size={16} />
                   </div>
                 </motion.div>
               ))}
               
-              {/* Admin Registration Disabled Notice */}
-              <motion.div className="portal-card text-center opacity-50 cursor-not-allowed">
-                <div className="mb-8">
-                  <ShieldCheck className="mx-auto mb-6 text-5xl text-silver-primary" />
-                  <h3 className="text-2xl font-black tracking-tighter text-white mb-4">
-                    ADMIN CONSOLE
-                  </h3>
-                  <p className="text-sm text-text-muted leading-relaxed mb-6">
-                    Complete system control and oversight.
-                  </p>
-                  <div className="badge-silver">
-                    REGISTRATION DISABLED
+              {/* Admin Registration Disabled Notice (only in register mode) */}
+              {!isLoginMode && (
+                <motion.div className="portal-card text-center opacity-50 cursor-not-allowed">
+                  <div className="mb-8">
+                    <ShieldCheck className="mx-auto mb-6 text-5xl text-silver-primary" />
+                    <h3 className="text-2xl font-black tracking-tighter text-white mb-4">
+                      ADMIN CONSOLE
+                    </h3>
+                    <p className="text-sm text-text-muted leading-relaxed mb-6">
+                      Complete system control and oversight.
+                    </p>
+                    <div className="badge-silver">
+                      REGISTRATION DISABLED
+                    </div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              )}
             </motion.div>
           ) : (
             <motion.div 
@@ -259,21 +346,24 @@ const Register: React.FC = () => {
                   </div>
                </div>
 
-               <form onSubmit={handleRegister} className="space-y-6">
+               <form onSubmit={isLoginMode ? handleLogin : handleRegister} className="space-y-6">
                   {/* Common Fields */}
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase text-silver-primary tracking-widest ml-1">
-                      Full Name
-                    </label>
-                    <input 
-                      type="text" 
-                      required 
-                      placeholder="John Doe"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="luxury-input w-full" 
-                    />
-                  </div>
+                  {!isLoginMode && (
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold uppercase text-silver-primary tracking-widest ml-1">
+                        Full Name
+                      </label>
+                      <input 
+                        type="text" 
+                        required 
+                        placeholder="John Doe"
+                        value={formData.name}
+                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                        className="luxury-input w-full" 
+                      />
+                    </div>
+                  )}
+                  
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase text-silver-primary tracking-widest ml-1">
                       Email Address
@@ -287,9 +377,10 @@ const Register: React.FC = () => {
                       className="luxury-input w-full" 
                     />
                   </div>
+                  
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase text-silver-primary tracking-widest ml-1">
-                      Password (min 6 chars)
+                      Password {!isLoginMode && '(min 6 chars)'}
                     </label>
                     <input 
                       type="password" 
@@ -300,22 +391,25 @@ const Register: React.FC = () => {
                       className="luxury-input w-full" 
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase text-silver-primary tracking-widest ml-1">
-                      Confirm Password
-                    </label>
-                    <input 
-                      type="password" 
-                      required 
-                      placeholder="••••••••"
-                      value={formData.confirmPassword}
-                      onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-                      className="luxury-input w-full" 
-                    />
-                  </div>
+                  
+                  {!isLoginMode && (
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold uppercase text-silver-primary tracking-widest ml-1">
+                        Confirm Password
+                      </label>
+                      <input 
+                        type="password" 
+                        required 
+                        placeholder="••••••••"
+                        value={formData.confirmPassword}
+                        onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                        className="luxury-input w-full" 
+                      />
+                    </div>
+                  )}
 
                   {/* Role-specific Fields */}
-                  {selectedRole === 'student' ? (
+                  {!isLoginMode && selectedRole === 'student' && (
                     <>
                       <div className="space-y-2">
                         <label className="text-xs font-bold uppercase text-silver-primary tracking-widest ml-1">
@@ -354,7 +448,9 @@ const Register: React.FC = () => {
                         />
                       </div>
                     </>
-                  ) : (
+                  )}
+                  
+                  {!isLoginMode && selectedRole === 'company' && (
                     <>
                       <div className="space-y-2">
                         <label className="text-xs font-bold uppercase text-silver-primary tracking-widest ml-1">
@@ -365,18 +461,6 @@ const Register: React.FC = () => {
                           placeholder="Your company name"
                           value={formData.companyName}
                           onChange={(e) => setFormData({...formData, companyName: e.target.value})}
-                          className="luxury-input w-full" 
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-xs font-bold uppercase text-silver-primary tracking-widest ml-1">
-                          Official Email
-                        </label>
-                        <input 
-                          type="email" 
-                          placeholder="company@domain.com"
-                          value={formData.email}
-                          onChange={(e) => setFormData({...formData, email: e.target.value})}
                           className="luxury-input w-full" 
                         />
                       </div>
@@ -432,11 +516,13 @@ const Register: React.FC = () => {
                      {isLoading ? (
                        <>
                          <div className="spinner"></div>
-                         CREATING ACCOUNT...
+                         {isLoginMode ? 'AUTHENTICATING...' : 'CREATING ACCOUNT...'}
                        </>
                      ) : (
                        <>
-                         {selectedRole === 'student' ? 'CREATE STUDENT ACCOUNT' : 'REGISTER COMPANY'} <ArrowRight size={18} />
+                         {isLoginMode ? 'SECURE LOGIN' : 
+                          selectedRole === 'student' ? 'CREATE STUDENT ACCOUNT' : 'REGISTER COMPANY'} 
+                         <ArrowRight size={18} />
                        </>
                      )}
                   </button>
@@ -446,16 +532,19 @@ const Register: React.FC = () => {
                  <Sparkles size={12} /> 🔒 256-bit encrypted · JWT secured <Sparkles size={12} />
                </p>
                
-               {/* Toggle between Register and Login */}
+               {/* Toggle between Login and Register */}
                <div className="text-center mt-8">
                  <p className="text-sm text-silver-primary mb-4">
-                   Already have account?{' '}
-                   <Link 
-                     to="/login" 
+                   {isLoginMode ? 'New here?' : 'Already have account?'}{' '}
+                   <button
+                     onClick={() => {
+                       setIsLoginMode(!isLoginMode);
+                       setSelectedRole(null);
+                     }}
                      className="text-gold-primary hover:text-gold-secondary font-bold uppercase tracking-wider transition-colors"
                    >
-                     LOGIN HERE →
-                   </Link>
+                     {isLoginMode ? 'CREATE ACCOUNT →' : 'LOGIN HERE →'}
+                   </button>
                  </p>
                </div>
             </motion.div>
@@ -466,4 +555,4 @@ const Register: React.FC = () => {
   );
 };
 
-export default Register;
+export default Auth;
