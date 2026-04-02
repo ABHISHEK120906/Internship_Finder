@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Briefcase, ArrowRight, Sparkles, ChevronLeft, UserPlus, Key, Building, GraduationCap } from 'lucide-react';
+import { User, Briefcase, ArrowRight, Sparkles, ChevronLeft, UserPlus, Key, Building, GraduationCap, ShieldCheck } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';

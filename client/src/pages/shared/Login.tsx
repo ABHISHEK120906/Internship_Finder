@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, User, Briefcase, Lock, ArrowRight, Sparkles, ChevronLeft, UserPlus } from 'lucide-react';
+import { ShieldCheck, User, Briefcase, Lock, ArrowRight, Sparkles, ChevronLeft } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -99,7 +99,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-screen bg-luxury overflow-hidden flex items-center justify-center relative p-10 select-none">
+    <div className="min-h-screen w-full bg-luxury flex items-center justify-center relative p-10 select-none overflow-x-hidden">
       
       {/* Background Effects */}
       <div className="absolute top-0 left-0 w-full h-full opacity-20">

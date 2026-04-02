@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Globe, 
   ShieldCheck, 
-  Zap, 
   Rocket, 
   Users, 
   Award, 
@@ -13,18 +12,16 @@ import {
   Target,
   TrendingUp,
   Building,
-  MapPin,
-  Calendar,
   Star,
   CheckCircle,
   Play,
   Menu,
+  Phone,
+  Globe as LinkIcon,
+  User as UserIcon,
+  MessageCircle,
   X,
-  Linkedin,
-  Github,
-  Twitter,
-  Mail,
-  Phone
+  Mail
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -595,13 +592,13 @@ const Landing: React.FC = () => {
               <h4 className="font-bold text-white mb-4">Connect</h4>
               <div className="flex gap-4 mb-4">
                 <a href="#" className="w-10 h-10 bg-black-card border border-silver-border rounded-lg flex items-center justify-center hover:border-gold-primary transition-colors">
-                  <Linkedin className="text-silver-primary" size={18} />
+                  <LinkIcon className="text-silver-primary" size={18} />
                 </a>
                 <a href="#" className="w-10 h-10 bg-black-card border border-silver-border rounded-lg flex items-center justify-center hover:border-gold-primary transition-colors">
-                  <Github className="text-silver-primary" size={18} />
+                  <UserIcon className="text-silver-primary" size={18} />
                 </a>
                 <a href="#" className="w-10 h-10 bg-black-card border border-silver-border rounded-lg flex items-center justify-center hover:border-gold-primary transition-colors">
-                  <Twitter className="text-silver-primary" size={18} />
+                  <MessageCircle className="text-silver-primary" size={18} />
                 </a>
               </div>
               <div className="space-y-2">

@@ -8,7 +8,6 @@ import {
   Briefcase, 
   Award, 
   TrendingUp, 
-  ShieldCheck, 
   Mail, 
   CheckCircle2, 
   Clock,
@@ -16,19 +15,17 @@ import {
   Calendar,
   FileText,
   Search,
-  Filter,
   Eye,
   Edit,
   Trash2,
   Target,
-  BarChart3,
-  UserPlus
+  BarChart3
 } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { AreaChart, Area, XAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { useAuth } from '../../hooks/useAuth';
 
 const CompanyDashboard: React.FC = () => {
-  const { user } = useAuth();
+  const auth = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('all');
 
