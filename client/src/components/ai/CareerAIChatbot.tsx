@@ -30,7 +30,8 @@ const CareerAIChatbot: React.FC<{ primaryColor: string }> = ({ primaryColor }) =
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/ai/chat', { 
+      const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const response = await axios.post(`${baseURL}/ai/chat`, { 
         messages: [...messages, userMessage].map(m => ({ role: m.role, content: m.content })) 
       });
       setMessages(prev => [...prev, { role: 'assistant', content: response.data.reply }]);
