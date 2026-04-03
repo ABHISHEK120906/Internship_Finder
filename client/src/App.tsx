@@ -7,21 +7,11 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Landing = lazy(() => 
-  import('./pages/shared/Landing.tsx'));
-const Auth = lazy(() => 
-  import('./pages/shared/Auth.tsx'));
-const StudentDashboard = lazy(() => 
-  import('./pages/student/Dashboard.tsx'));
-const AdminDashboard = lazy(() => 
-  import('./pages/admin/Dashboard.tsx'));
-const CompanyDashboard = lazy(() => 
-  import('./pages/company/Dashboard.tsx'));
-const CareerRoadmap = lazy(() => 
-  import('./pages/student/CareerRoadmap.tsx'));
-const RoadmapDetail = lazy(() => 
-  import('./pages/student/RoadmapDetail.tsx'));
-const LearningProgress = lazy(() => 
-  import('./pages/student/LearningProgress.tsx'));
+  import('./pages/Landing.tsx'));
+const Login = lazy(() => 
+  import('./pages/Login.tsx'));
+const Dashboard = lazy(() => 
+  import('./pages/Dashboard.tsx'));
 
 // Loading Screen
 const LoadingScreen = () => (
@@ -233,32 +223,9 @@ const App: React.FC = () => {
         <Suspense fallback={<LoadingScreen />}>
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Auth />} />
-            <Route path="/register" element={<Auth />} />
-            <Route 
-              path="/student/dashboard" 
-              element={<StudentDashboard />} 
-            />
-            <Route 
-              path="/student/career-roadmap" 
-              element={<CareerRoadmap />} 
-            />
-            <Route 
-              path="/student/career-roadmap/:fieldId" 
-              element={<RoadmapDetail />} 
-            />
-            <Route 
-              path="/student/learning-progress" 
-              element={<LearningProgress />} 
-            />
-            <Route 
-              path="/admin/dashboard" 
-              element={<AdminDashboard />} 
-            />
-            <Route 
-              path="/company/dashboard" 
-              element={<CompanyDashboard />} 
-            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Login />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
