@@ -48,10 +48,14 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-black">
-      {/* Left Panel */}
-      <div className="hidden lg:flex lg:w-[45%] relative overflow-hidden">
-        {/* Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-gold-500/5" />
+      {/* Left Panel - 40% */}
+      <div className="hidden lg:flex lg:w-[40%] relative overflow-hidden">
+        {/* Pure Black with Gold Glow Background */}
+        <div className="absolute inset-0 bg-black" />
+        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-gold-500/8 to-transparent" />
+        
+        {/* Gold Glow Effect */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gold-500/10 blur-[100px]" />
         
         {/* Content */}
         <div className="relative z-10 flex flex-col justify-center items-center p-12 text-center">
@@ -118,8 +122,8 @@ const Login: React.FC = () => {
         </div>
       </div>
 
-      {/* Right Panel */}
-      <div className="w-full lg:w-[55%] flex items-center justify-center p-8 lg:p-12">
+      {/* Right Panel - 60% */}
+      <div className="w-full lg:w-[60%] flex items-center justify-center p-8 lg:p-12 bg-black/50">
         <motion.div
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}

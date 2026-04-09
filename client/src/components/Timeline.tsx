@@ -22,16 +22,16 @@ const TimelineStep: React.FC<TimelineStepProps> = ({
       whileInView={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.6, delay }}
       viewport={{ once: true }}
-      className={`flex flex-col ${position === 'above' ? 'items-start mb-8' : 'items-start mt-8'} lg:w-1/4`}
+      className={`flex flex-col ${position === 'above' ? 'items-start mb-8' : 'items-start mt-8'} lg:w-1/4 relative`}
     >
-      {/* Step Number (background) */}
-      <div className="absolute text-[120px] font-black text-white/6 -z-10">
+      {/* Large faded number background */}
+      <div className="absolute text-[180px] lg:text-[200px] font-black text-white/4 -z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
         {number}
       </div>
 
       {/* Content */}
-      <div className="relative z-10">
-        <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
+      <div className="relative z-10 bg-black/40 backdrop-blur-xl p-6 rounded-2xl border border-white/5">
+        <h3 className="text-xl font-bold text-white mb-3">{title}</h3>
         <p className="text-sm text-silver-400 leading-[1.7] max-w-xs">
           {description}
         </p>
@@ -91,41 +91,45 @@ const Timeline: React.FC = () => {
         </motion.div>
 
         {/* Timeline */}
-        <div className="relative">
-          {/* Center Line */}
+        <div className="relative py-20">
+          {/* Gold Connecting Line */}
           <motion.div
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
-            transition={{ duration: 1, delay: 0.2 }}
+            transition={{ duration: 1.2, delay: 0.2 }}
             viewport={{ once: true }}
-            className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-500 to-transparent -translate-y-1/2 origin-left"
+            className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold-500/60 to-transparent -translate-y-1/2 origin-left"
           />
 
-          {/* Timeline Nodes and Steps */}
-          <div className="flex flex-col lg:flex-row relative justify-between items-center">
+          {/* Zigzag Timeline Steps */}
+          <div className="relative flex flex-col lg:flex-row justify-between items-center gap-8 lg:gap-0">
             {steps.map((step, index) => (
-              <React.Fragment key={index}>
-                {/* Node */}
+              <div key={index} className="relative w-full lg:w-1/4">
+                {/* Gold Dot */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
                   viewport={{ once: true }}
-                  className="relative"
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"
                 >
-                  <div className="w-3 h-3 bg-gold-500 rounded-full shadow-[0_0_20px_rgba(201,168,76,0.6)] animate-pulse" />
+                  <div className="w-4 h-4 bg-gradient-to-r from-gold-500 to-gold-300 rounded-full shadow-[0_0_30px_rgba(201,168,76,0.8)] animate-pulse" />
                 </motion.div>
 
-                {/* Step Content */}
-                <div className={`absolute ${index % 2 === 0 ? 'top-0' : 'bottom-0'} left-1/2 transform -translate-x-1/2 ${index % 2 === 0 ? 'translate-y-8' : '-translate-y-8'} lg:relative lg:transform-none lg:translate-x-0 lg:translate-y-0`}>
-                  <TimelineStep {...step} delay={0.4 + index * 0.1} />
+                {/* Step Content - Zigzag Layout */}
+                <div className={`relative ${index % 2 === 0 ? 'lg:pr-8 lg:text-left' : 'lg:pl-8 lg:text-right'} ${index % 2 === 0 ? 'lg:items-start' : 'lg:items-end'} flex items-center justify-center lg:justify-start lg:min-h-[200px]`}>
+                  <TimelineStep 
+                    {...step} 
+                    delay={0.4 + index * 0.1}
+                    position={index % 2 === 0 ? 'above' : 'below'}
+                  />
                 </div>
 
-                {/* Separator (except last) */}
+                {/* Connecting Line (except last) */}
                 {index < steps.length - 1 && (
-                  <div className="hidden lg:block lg:flex-1" />
+                  <div className="hidden lg:block absolute top-1/2 left-1/2 w-full h-px bg-gradient-to-r from-gold-500/20 to-transparent transform translate-x-1/2" />
                 )}
-              </React.Fragment>
+              </div>
             ))}
           </div>
         </div>

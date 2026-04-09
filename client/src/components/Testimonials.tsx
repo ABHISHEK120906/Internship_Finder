@@ -17,34 +17,46 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
   initials 
 }) => {
   return (
-    <div className="spotlight-card p-8 relative min-w-[350px]">
-      {/* Quote Marks */}
-      <div className="absolute top-4 left-4 text-6xl text-gold-500/15 font-serif">
+    <div className="spotlight-card p-8 relative min-w-[380px] lg:min-w-[420px] group">
+      {/* Large Quote Marks */}
+      <div className="absolute top-6 left-6 text-8xl text-gold-500/20 font-serif leading-none">
         "
       </div>
 
       {/* Quote */}
-      <p className="text-sm text-white/60 italic leading-[1.8] mb-6 relative z-10">
+      <p className="text-sm text-white/70 italic leading-[1.8] mb-8 relative z-10 pl-8">
         {quote}
       </p>
 
       {/* Author Section */}
       <div className="flex items-center gap-4">
-        {/* Avatar */}
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-500 to-gold-300 flex items-center justify-center shadow-[0_0_20px_rgba(201,168,76,0.3)]">
-          <span className="text-black font-black text-sm">{initials}</span>
+        {/* Avatar with Gold Ring */}
+        <div className="relative">
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-gold-500 to-gold-300 flex items-center justify-center shadow-[0_0_30px_rgba(201,168,76,0.6)] ring-2 ring-gold-500/30 ring-offset-2 ring-offset-black/80">
+            <span className="text-black font-black text-sm">{initials}</span>
+          </div>
         </div>
 
         {/* Author Info */}
         <div className="flex-1">
-          <div className="font-bold text-white">{author}</div>
-          <div className="text-gold-500 text-sm">{role}</div>
+          <div className="font-bold text-white text-base">{author}</div>
+          <div className="text-gold-500 text-sm font-medium">{role}</div>
           <div className="text-silver-400 text-xs">{college}</div>
         </div>
 
-        {/* Stars */}
-        <div className="text-gold-500 text-sm">
-          {'★'.repeat(5)}
+        {/* 5 Stars with Gold Glow */}
+        <div className="flex gap-1">
+          {[...Array(5)].map((_, i) => (
+            <div 
+              key={i} 
+              className="w-4 h-4 text-gold-500 drop-shadow-[0_0_8px_rgba(201,168,76,0.6)]"
+              style={{
+                filter: 'drop-shadow(0 0 8px rgba(201,168,76,0.6))'
+              }}
+            >
+              {'\u2605'}
+            </div>
+          ))}
         </div>
       </div>
     </div>

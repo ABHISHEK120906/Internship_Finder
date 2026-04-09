@@ -19,36 +19,64 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
   stat, 
   statLabel 
 }) => {
+  const [mousePosition, setMousePosition] = React.useState({ x: 0, y: 0 });
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setMousePosition({ x, y });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
       viewport={{ once: true }}
-      className="spotlight-card p-12 relative group"
+      className="border-glow-animated p-12 relative group cursor-pointer"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => setMousePosition({ x: 50, y: 50 })}
+      style={{
+        '--mouse-x': `${mousePosition.x}%`,
+        '--mouse-y': `${mousePosition.y}%`
+      } as React.CSSProperties}
+      whileHover={{
+        y: -8,
+        scale: 1.02,
+        transition: { duration: 0.3, ease: "easeOut" }
+      }}
     >
+      {/* Mouse tracking glow effect */}
+      <div 
+        className="absolute inset-0 rounded-[20px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+        style={{
+          background: `radial-gradient(600px circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(201,168,76,0.15), transparent 40%)`
+        }}
+      />
+
       {/* Tag */}
       {tag && (
         <div className="absolute top-6 right-6">
-          <span className="px-3 py-1 bg-gold-500/10 border border-gold-500/30 rounded-full text-xs font-black text-gold-500">
+          <span className="px-3 py-1 bg-gold-500/10 border border-gold-500/30 rounded-full text-xs font-black text-gold-500 animate-pulse">
             {tag}
           </span>
         </div>
       )}
 
-      {/* Icon */}
-      <div className="w-14 h-14 rounded-full border border-gold-500/30 bg-gold-500/6 backdrop-blur-10 flex items-center justify-center mb-5 shadow-[0_0_20px_rgba(201,168,76,0.3)] group-hover:shadow-[0_0_40px_rgba(201,168,76,0.5)] transition-shadow duration-300">
+      {/* Icon with glowing gold ring */}
+      <div className="w-16 h-16 rounded-full border-2 border-gold-500/30 bg-gold-500/6 backdrop-blur-xl flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(201,168,76,0.4)] group-hover:shadow-[0_0_50px_rgba(201,168,76,0.6)] transition-all duration-300 group-hover:scale-110">
         {icon}
       </div>
 
       {/* Content */}
-      <h3 className="text-2xl font-bold text-white mb-3">{title}</h3>
-      <p className="text-sm text-white/45 leading-[1.8] mb-6">{description}</p>
+      <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-gold-400 transition-colors duration-300">{title}</h3>
+      <p className="text-sm text-white/45 leading-[1.8] mb-6 group-hover:text-white/60 transition-colors duration-300">{description}</p>
 
-      {/* Stat */}
+      {/* Stat with gold line */}
       {stat && (
-        <div className="pt-6 border-t border-white/6">
-          <div className="text-gold-500 font-bold text-lg">{stat}</div>
+        <div className="pt-6 border-t border-gold-500/20 group-hover:border-gold-500/40 transition-colors duration-300">
+          <div className="text-gold-500 font-bold text-lg mb-1">{stat}</div>
           <div className="text-silver-400 text-xs">{statLabel}</div>
         </div>
       )}

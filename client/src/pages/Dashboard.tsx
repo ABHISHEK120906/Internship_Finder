@@ -168,54 +168,56 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-black">
-      {/* Sidebar */}
-      <aside className="w-60 bg-[#050505] border-r border-white/4">
+      {/* Premium Sidebar */}
+      <aside className="w-[240px] bg-[#050505] border-r border-white/4">
         {/* Logo */}
         <div className="p-6 border-b border-white/4">
-          <div className="flex items-center gap-2">
-            <span className="text-white font-black text-lg italic">ELITEX</span>
-            <span className="text-gold-500 font-black text-lg">•</span>
-            <span className="text-silver-400 font-black text-lg">AI</span>
+          <div className="flex items-center gap-3">
+            <span className="text-white font-black text-xl italic tracking-[0.02em]">ELITEX</span>
+            <span className="w-2 h-2 bg-gradient-to-r from-gold-500 to-gold-300 rounded-full shadow-[0_0_12px_rgba(201,168,76,0.6)]" />
+            <span className="shimmer-text font-black text-xl tracking-[0.02em]">AI</span>
           </div>
         </div>
 
         {/* Navigation */}
         <nav className="p-4">
           {navSections.map((section) => (
-            <div key={section.id} className="mb-6">
-              <div className="text-xs tracking-[0.4em] text-white/20 mb-3 px-4">
+            <div key={section.id} className="mb-8">
+              <div className="text-[10px] tracking-[0.4em] uppercase text-silver-400 mb-4 px-4 font-medium">
                 {section.label}
               </div>
               {section.items.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => setActiveSection(item.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-all duration-200 relative ${
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-300 relative ${
                     activeSection === item.id
-                      ? 'bg-gold-500/8 text-gold-500'
-                      : 'text-white/30 hover:bg-white/3 hover:text-white/60'
+                      ? 'bg-gold-500/10 text-gold-500 font-medium'
+                      : 'text-white/40 hover:bg-white/5 hover:text-white/60'
                   }`}
                 >
                   {activeSection === item.id && (
-                    <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-gold-500 to-gold-300 rounded-r" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-gold-500 to-gold-300 rounded-r" />
                   )}
                   <item.icon className="w-4 h-4" />
-                  <span>{item.label}</span>
+                  <span className="tracking-[0.02em]">{item.label}</span>
                 </button>
               ))}
             </div>
           ))}
         </nav>
 
-        {/* User Profile */}
+        {/* User Card */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-500 to-gold-300 flex items-center justify-center">
-              <span className="text-black font-black text-sm">JD</span>
-            </div>
-            <div className="flex-1">
-              <div className="text-white font-medium text-sm">John Doe</div>
-              <div className="text-gold-500 text-xs">Premium Member</div>
+          <div className="bg-white/3 rounded-lg p-3 border border-white/5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gold-500 to-gold-300 flex items-center justify-center ring-2 ring-gold-500/20">
+                <span className="text-black font-black text-sm">JD</span>
+              </div>
+              <div className="flex-1">
+                <div className="text-white font-medium text-sm">John Doe</div>
+                <div className="text-gold-500 text-xs font-medium">Premium Member</div>
+              </div>
             </div>
           </div>
         </div>
@@ -263,7 +265,7 @@ const Dashboard: React.FC = () => {
 
         {/* Dashboard Content */}
         <div className="p-8">
-          {/* Stats Cards */}
+          {/* Spotlight Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {statsCards.map((stat, index) => (
               <motion.div
@@ -271,27 +273,34 @@ const Dashboard: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="spotlight-card p-8"
+                className="spotlight-card p-8 group cursor-pointer"
+                whileHover={{
+                  y: -4,
+                  transition: { duration: 0.3 }
+                }}
               >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="w-10 h-10 rounded-full bg-gold-500/10 border border-gold-500/30 flex items-center justify-center">
-                    <stat.icon className="w-5 h-5 text-gold-500" />
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-full bg-gold-500/10 border border-gold-500/30 flex items-center justify-center group-hover:shadow-[0_0_30px_rgba(201,168,76,0.4)] transition-all duration-300">
+                    <stat.icon className="w-6 h-6 text-gold-500" />
                   </div>
-                  <div className={`flex items-center gap-1 text-xs ${
+                  <div className={`flex items-center gap-1 text-xs font-medium ${
                     stat.trend === 'up' ? 'text-green-500' : 'text-red-500'
                   }`}>
                     {stat.trend === 'up' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                     <span>{stat.trendValue}</span>
                   </div>
                 </div>
-                <div className={`text-5xl font-black mb-2 ${
+                <div className={`text-6xl lg:text-7xl font-black italic mb-2 ${
                   stat.color === 'gold' ? 'shimmer-text' : 'text-white'
                 }`}>
                   {stat.value}
                 </div>
-                <div className="text-xs text-silver-400 tracking-[0.3em] uppercase">
+                <div className="text-xs text-silver-400 tracking-[0.3em] uppercase font-light">
                   {stat.title}
                 </div>
+                
+                {/* Gold line at bottom */}
+                <div className="mt-4 h-px bg-gradient-to-r from-transparent via-gold-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.div>
             ))}
           </div>

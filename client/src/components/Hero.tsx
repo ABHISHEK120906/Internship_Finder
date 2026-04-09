@@ -76,14 +76,15 @@ const Hero: React.FC = () => {
             <div className="text-white" style={{ textShadow: '0 0 80px rgba(255,255,255,0.1)' }}>
               REDEFINE
             </div>
-            <div className="text-[108px] shimmer-text mb-2" style={{ textShadow: '0 0 80px rgba(201,168,76,0.3), 0 0 160px rgba(201,168,76,0.1)' }}>
-              YOUR CAREER
+            <div className="text-[96px] shimmer-text mb-2" style={{ textShadow: '0 0 80px rgba(201,168,76,0.3), 0 0 160px rgba(201,168,76,0.1)' }}>
+              YOUR CAREER.
             </div>
             <div 
               ref={headingRef}
-              className="text-white/15"
+              className="text-[96px] font-black"
               style={{ 
-                WebkitTextStroke: '1px rgba(255,255,255,0.3)'
+                WebkitTextStroke: '1px rgba(255,255,255,0.3)',
+                color: 'transparent'
               }}
             >
               TRAJECTORY.
@@ -106,14 +107,14 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1.6 }}
-          className="flex flex-col sm:flex-row gap-4 items-center"
+          className="flex flex-col sm:flex-row gap-6 items-center"
         >
           <button className="magnetic border-glow-animated px-12 py-4 bg-gradient-to-r from-gold-500 to-gold-300 text-black font-black text-sm tracking-[0.12em] rounded-full shadow-[0_0_40px_rgba(201,168,76,0.4),0_0_80px_rgba(201,168,76,0.15)] hover:shadow-[0_0_60px_rgba(201,168,76,0.5),0_0_120px_rgba(201,168,76,0.2),0_0_200px_rgba(201,168,76,0.08)] relative overflow-hidden group">
-            <span className="relative z-10">ACCESS PLATFORM →</span>
+            <span className="relative z-10">ACCESS PLATFORM</span>
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500" />
           </button>
           
-          <button className="px-10 py-4 bg-white/4 border border-white/8 text-white/60 font-bold text-sm tracking-[0.05em] rounded-full hover:bg-white/8 hover:border-gold-500/30 hover:text-white transition-all duration-300">
+          <button className="px-12 py-4 bg-white/4 border border-white/8 text-white/60 font-bold text-sm tracking-[0.05em] rounded-full hover:bg-white/8 hover:border-gold-500/30 hover:text-white transition-all duration-300">
             WATCH DEMO
           </button>
         </motion.div>

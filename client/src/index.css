@@ -1,9 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  /* Deep blacks - layered */
+  /* Exact colors from specification */
+  --bg-black: #000000;
+  --bg-cards: #0f0f0f;
+  --primary-gold: #C9A84C;
+  --secondary-silver: #C0C0C0;
+  --text-white: #FFFFFF;
+  --border-gold: rgba(201,168,76,0.15);
+
+  /* Extended palette for components */
   --bg-0: #000000;
-  --bg-1: #080808;
+  --bg-1: #050505;
   --bg-2: #0f0f0f;
   --bg-3: #141414;
   --bg-4: #1a1a1a;
@@ -77,6 +85,33 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+/* Special UI Touches */
+html {
+  scroll-behavior: smooth;
+}
+
+::selection { 
+  background: rgba(201,168,76,0.3);
+  color: white;
+}
+
+:focus-visible {
+  outline: 2px solid #C9A84C;
+  outline-offset: 4px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #000000;
+}
+::-webkit-scrollbar-thumb {
+  background: #C9A84C;
+  border-radius: 2px;
 }
 
 /* Animated Grain Texture */
@@ -224,10 +259,10 @@ body::after {
   position: fixed;
   top: 0; left: 0;
   height: 2px;
-  background: var(--grad-gold);
+  background: linear-gradient(90deg, #C9A84C, #FFD700, #C9A84C);
   z-index: 9999;
   width: var(--scroll-percent, 0%);
-  box-shadow: var(--glow-gold-sm);
+  box-shadow: 0 0 20px rgba(201,168,76,0.3);
   transition: width 0.2s ease;
 }
 
@@ -576,4 +611,46 @@ body::after {
 
 .animate-border-glow {
   animation: border-glow 3s ease-in-out infinite;
+}
+
+/* Page Load Animation */
+.page-loading {
+  overflow: hidden;
+}
+
+.page-loading::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  z-index: 9999;
+  animation: fadeOut 0.8s ease-out forwards;
+}
+
+.page-loaded * {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
