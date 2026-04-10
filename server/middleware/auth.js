@@ -91,3 +91,6 @@ module.exports = {
   isStudentOrAdmin,
   isCompanyOrAdmin
 };
+
+// Default export for compatibility
+module.exports.auth = authenticateToken;

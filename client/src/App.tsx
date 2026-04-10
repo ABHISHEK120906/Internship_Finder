@@ -12,6 +12,8 @@ const Login = lazy(() =>
   import('./pages/Login.tsx'));
 const Dashboard = lazy(() => 
   import('./pages/Dashboard.tsx'));
+const Internships = lazy(() => 
+  import('./pages/Internships.tsx'));
 
 // Loading Screen
 const LoadingScreen = () => (
@@ -226,6 +228,7 @@ const App: React.FC = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/internships" element={<Internships />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
